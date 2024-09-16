@@ -1,12 +1,12 @@
 mod todolist;
 use todolist::services;
 
-use std::sync::Mutex;
-use actix_web::{web, App, HttpServer, get};
+use actix_web::{get, web, App, HttpServer};
 use serde::{Deserialize, Serialize};
+use std::sync::Mutex;
 
 struct AppState {
-    todolist_entries: Mutex<Vec<TodolistEntry>>
+    todolist_entries: Mutex<Vec<TodolistEntry>>,
 }
 #[derive(Deserialize, Serialize, Clone)]
 struct TodolistEntry {
@@ -17,13 +17,13 @@ struct TodolistEntry {
 
 #[get("/")]
 async fn index() -> String {
-   "This is a health check".to_string()
+    "This is a health check".to_string()
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let app_data = web::Data::new(AppState {
-        todolist_entries: Mutex::new(vec![])
+        todolist_entries: Mutex::new(vec![]),
     });
 
     HttpServer::new(move || {
@@ -32,7 +32,7 @@ async fn main() -> std::io::Result<()> {
             .service(index)
             .configure(services::config)
     })
-        .bind("127.0.0.1:8080")?
-        .run()
-        .await
+    .bind("127.0.0.1:8080")?
+    .run()
+    .await
 }
